@@ -1,0 +1,8 @@
+{
+    "map_name": "Newstation Station",
+    "map_path": "map_files/Newstation",
+    "map_file": "Newstation.dmm",
+	"shuttles": {
+	    "cargo": "cargo_delta"
+    }
+}
