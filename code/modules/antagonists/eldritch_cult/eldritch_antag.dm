@@ -67,9 +67,9 @@
 
 /datum/antagonist/heretic/proc/ecult_give_item(obj/item/item_path, mob/living/carbon/human/H)
 	var/list/slots = list(
-		"backpack" = SLOT_IN_BACKPACK,
-		"left pocket" = SLOT_L_STORE,
-		"right pocket" = SLOT_R_STORE
+		"backpack" = ITEM_SLOT_BACKPACK,
+		"left pocket" = ITEM_SLOT_LPOCKET,
+		"right pocket" = ITEM_SLOT_RPOCKET
 	)
 
 	var/T = new item_path(H)
@@ -229,7 +229,7 @@
 	var/timer = 5 MINUTES
 
 /datum/objective/stalk/process()
-	if(owner?.current?.stat != DEAD && target?.current?.stat != DEAD && (target in view(5,owner.current)))
+	if(owner?.current?.stat != DEAD && target?.current?.stat != DEAD && (owner.current in viewers(5, get_turf(target))))
 		timer -= 1 SECONDS
 	///we don't want to process after the counter reaches 0, otherwise it is wasted processing
 	if(timer <= 0)
