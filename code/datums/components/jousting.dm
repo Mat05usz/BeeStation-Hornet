@@ -16,23 +16,28 @@
 	var/current_timerid
 
 /datum/component/jousting/Initialize()
+	to_chat(world, "Before incompatible")
 	if(!isitem(parent))
 		return COMPONENT_INCOMPATIBLE
+	to_chat(world,"After incompatible")
 	RegisterSignal(parent, COMSIG_ITEM_EQUIPPED, .proc/on_equip)
 	RegisterSignal(parent, COMSIG_ITEM_DROPPED, .proc/on_drop)
 	RegisterSignal(parent, COMSIG_ITEM_ATTACK, .proc/on_attack)
 
 /datum/component/jousting/proc/on_equip(datum/source, mob/user, slot)
+	to_chat(world,"On equip")
 	RegisterSignal(user, COMSIG_MOVABLE_MOVED, .proc/mob_move, TRUE)
 	current_holder = user
 
 /datum/component/jousting/proc/on_drop(datum/source, mob/user)
 	UnregisterSignal(user, COMSIG_MOVABLE_MOVED)
+	to_chat(world,"On drop")
 	current_holder = null
 	current_direction = NONE
 	current_tile_charge = 0
 
 /datum/component/jousting/proc/on_attack(datum/source, mob/living/target, mob/user)
+	to_chat(world,"On attack")
 	if(user != current_holder)
 		return
 	var/current = current_tile_charge
@@ -42,6 +47,7 @@
 		return
 	var/turf/target_turf = get_step(user, current_direction)
 	if(get_dist(target, target_turf) <= 1)
+		to_chat(world,"Inside attack")
 		var/knockdown_chance = (target_buckled? mounted_knockdown_chance_per_tile : unmounted_knockdown_chance_per_tile) * current
 		var/knockdown_time = (target_buckled? mounted_knockdown_time : unmounted_knockdown_time)
 		var/damage = (target_buckled? mounted_damage_boost_per_tile : unmounted_damage_boost_per_tile) * current
@@ -61,6 +67,9 @@
 /datum/component/jousting/proc/mob_move(datum/source, newloc, dir)
 	if(!current_holder || (requires_mount && ((requires_mob_riding && !ismob(current_holder.buckled)) || (!current_holder.buckled))))
 		return
+	to_chat(world,"After buckled if")
+	to_chat(world,dir)
+	to_chat(world,current_direction)
 	if(dir != current_direction)
 		current_tile_charge = 0
 		current_direction = dir

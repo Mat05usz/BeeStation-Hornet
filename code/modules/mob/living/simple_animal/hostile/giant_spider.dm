@@ -54,6 +54,10 @@
 
 	do_footstep = TRUE
 
+	can_buckle = TRUE
+	buckle_lying = FALSE
+	var/static/list/can_ride_typecache = typecacheof(/mob/living/carbon/human)
+
 /mob/living/simple_animal/hostile/poison/giant_spider/Initialize()
 	. = ..()
 	lay_web = new
@@ -541,6 +545,46 @@
 		throw_alert("temp", /atom/movable/screen/alert/hot, 3)
 	else
 		clear_alert("temp")
+
+
+/mob/living/simple_animal/hostile/poison/giant_spider/mouse_buckle_handling(mob/living/M, mob/living/user)
+	if(can_buckle && istype(M) && !(M in buckled_mobs) && ((user!=src)||(a_intent != INTENT_HARM)))
+		if(buckle_mob(M))
+			return TRUE
+
+/mob/living/simple_animal/hostile/poison/giant_spider/buckle_mob(mob/living/M, force = FALSE, check_loc = TRUE)
+	if(!is_type_in_typecache(M, can_ride_typecache))
+		M.visible_message("<span class='warning'>[M] really can't seem to mount [src]...</span>")
+		return
+	var/datum/component/riding/riding_datum = LoadComponent(/datum/component/riding/cyborg)
+	if(has_buckled_mobs())
+		if(buckled_mobs.len >= max_buckled_mobs)
+			return
+		if(M in buckled_mobs)
+			return
+	if(stat)
+		return
+	if(incapacitated())
+		return
+	if(M.incapacitated())
+		return
+	if(iscarbon(M) && (!riding_datum.equip_buckle_inhands(M, 1)))
+		if (M.get_num_arms() <= 0)
+			M.visible_message("<span class='boldwarning'>[M] can't climb onto [src] because [M.p_they()] don't have any usable arms!</span>")
+		else
+			M.visible_message("<span class='boldwarning'>[M] can't climb onto [src] because [M.p_their()] hands are full!</span>")
+		return
+	. = ..(M, force, check_loc)
+
+/mob/living/simple_animal/hostile/poison/giant_spider/unbuckle_mob(mob/user, force=FALSE)
+	if(iscarbon(user))
+		var/datum/component/riding/riding_datum = GetComponent(/datum/component/riding)
+		if(istype(riding_datum))
+			riding_datum.unequip_buckle_inhands(user)
+			riding_datum.restore_position(user)
+	. = ..(user)
+
+
 
 #undef SPIDER_IDLE
 #undef SPINNING_WEB

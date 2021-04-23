@@ -367,3 +367,6 @@
 		if(rider in AM.buckled_mobs)
 			AM.unbuckle_mob(rider)
 	. = ..()
+
+/datum/component/riding/spider
+	del_on_unbuckle_all = TRUE
