@@ -1,3 +1,6 @@
+#define SELF_BUCKLE_TIME 10
+#define SELF_UNBUCKLE_TIME 15
+
 /obj/vehicle/ridden
 	name = "ridden vehicle"
 	can_buckle = TRUE
@@ -90,9 +93,24 @@
 /obj/vehicle/ridden/user_buckle_mob(mob/living/M, mob/user, check_loc = TRUE)
 	if(!in_range(user, src) || !in_range(M, src))
 		return FALSE
+
+	if(M != user)
+		do_mob(user, M, SELF_BUCKLE_TIME * 1.5)
+	else
+		do_mob(user, M, SELF_BUCKLE_TIME)
+
 	. = ..(M, user, FALSE)
 
 /obj/vehicle/ridden/buckle_mob(mob/living/M, force = FALSE, check_loc = TRUE)
 	if(!force && occupant_amount() >= max_occupants)
 		return FALSE
 	return ..()
+
+/obj/vehicle/ridden/user_unbuckle_mob(mob/living/M, mob/user, check_loc)
+	if(M != user)
+		do_mob(user, M, SELF_UNBUCKLE_TIME * 1.5)
+	else
+		do_mob(user, M, SELF_UNBUCKLE_TIME)
+	. = ..()
+#undef SELF_BUCKLE_TIME
+#undef SELF_UNBUCKLE_TIME
