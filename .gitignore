@@ -209,7 +209,6 @@ tools/MapAtmosFixer/MapAtmosFixer/bin/*
 
 #extra map stuff
 /_maps/**/backup/
-/_maps/templates.dm
 
 # Ignore custom music (amend as appropriate)
 /config/jukebox_music/sounds/*
